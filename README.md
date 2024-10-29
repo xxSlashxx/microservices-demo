@@ -7,7 +7,8 @@ This repository contains a demo project showcasing the use of Spring Boot to bui
 - **Microservices Architecture:** Demonstrates a typical microservices architecture with multiple services.
 - **Spring Boot:** Utilizes Spring Boot to simplify the development and configuration of services.  
 - **RESTful APIs:** Each service exposes RESTful endpoints for interaction.  
-- **Service Discovery:** Implements Eureka for service registration and discovery.  
+- **Service Discovery:** Implements Eureka for service registration and discovery.
+- **Kafka:** Uses Apache Kafka for interservice communication.  
 - **API Gateway:** Uses Spring Cloud Gateway as an API gateway to route requests to appropriate services.  
 - **Database Support:** Each service can have its own database, demonstrated with H2.  
 - **Docker Support:** Contains Dockerfiles for easy containerization of services.  
