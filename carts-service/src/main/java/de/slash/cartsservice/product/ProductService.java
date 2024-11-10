@@ -27,10 +27,6 @@ public class ProductService {
 
     public ProductDTO loadById(Long id) {
         ServiceInstance serviceInstance = discoveryClient.getInstances(productsServiceServiceId).getFirst();
-        //WebClient client = WebClient.create(serviceInstance.getScheme() + "://" + serviceInstance.getServiceId() + ":" + serviceInstance.getPort());
-        //return client.get().uri(productsServiceBaseUrl + "/" + id).retrieve().bodyToFlux(ProductDTO.class).blockFirst();
-
         return restClient.get().uri(serviceInstance.getUri() + productsServiceBaseUrl + "/" + id).retrieve().body(ProductDTO.class);
-
     }
 }
