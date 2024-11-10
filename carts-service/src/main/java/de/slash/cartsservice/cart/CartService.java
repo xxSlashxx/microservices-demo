@@ -2,7 +2,6 @@ package de.slash.cartsservice.cart;
 
 import de.slash.cartsservice.cartitem.CartItem;
 import de.slash.cartsservice.cartitem.CartItemService;
-import de.slash.cartsservice.product.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,14 +30,14 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    public Cart addProduct(Cart cart, Product product) {
-        CartItem cartItem = cartItemService.createCartItem(cart, product.getId());
+    public Cart addProduct(Cart cart, Long productId) {
+        CartItem cartItem = cartItemService.createCartItem(cart, productId);
         cart.getItems().add(cartItem);
         return cartRepository.save(cart);
     }
 
-    public Cart removeProduct(Cart cart, Product product) {
-        CartItem cartItem = cartItemService.loadCartItem(cart, product.getId());
+    public Cart removeProduct(Cart cart, Long productId) {
+        CartItem cartItem = cartItemService.loadCartItem(cart, productId);
         cart.getItems().remove(cartItem);
         return cartRepository.save(cart);
     }

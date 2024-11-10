@@ -1,4 +1,4 @@
-package de.slash.productsservice.product;
+package de.slash.cartsservice.product;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

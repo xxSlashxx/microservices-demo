@@ -9,6 +9,7 @@ import de.slash.productsservice.product.Product;
 import de.slash.productsservice.product.ProductDTO;
 import de.slash.productsservice.product.ProductService;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,34 +21,36 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/products")
 public class ProductController {
 
-    private final ProductService productService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ProductService productService;
 
     @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @PostMapping("/create")
-    private ResponseEntity<Product> createProduct(@Valid @RequestBody ProductDTO productDTO) {
+    private ResponseEntity<Long> createProduct(@Valid @RequestBody ProductDTO productDTO) {
         Product createdProduct = productService.createProduct(productDTO.getName(), productDTO.getPrice());
-        return ResponseEntity.status(OK).body(createdProduct);
+        return ResponseEntity.status(OK).body(createdProduct.getId());
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<Product> getProduct(@PathVariable("id") Long id) {
+    private ResponseEntity<ProductDTO> getProduct(@PathVariable("id") Long id) {
         Product product = productService.getById(id);
-        return ResponseEntity.status(OK).body(product);
+        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        return ResponseEntity.status(OK).body(productDTO);
     }
 
     @PatchMapping(path = "/update/{id}", consumes = "application/json-patch+json")
-    private ResponseEntity<Product> updateProduct(@PathVariable("id") Long id, @RequestBody JsonPatch patch) {
+    private ResponseEntity<ProductDTO> updateProduct(@PathVariable("id") Long id, @RequestBody JsonPatch patch) {
         try {
             Product product = productService.getById(id);
             Product patchedProduct = applyPatch(patch, product);
             Product savedProduct = productService.saveProduct(patchedProduct);
-            return ResponseEntity.status(OK).body(savedProduct);
+            ProductDTO productDTO = modelMapper.map(savedProduct, ProductDTO.class);
+            return ResponseEntity.status(OK).body(productDTO);
         } catch (JsonPatchException | JsonProcessingException ex) {
             return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
         }

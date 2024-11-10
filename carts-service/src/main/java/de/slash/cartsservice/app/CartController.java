@@ -1,9 +1,12 @@
 package de.slash.cartsservice.app;
 
 import de.slash.cartsservice.cart.Cart;
+import de.slash.cartsservice.cart.CartDTO;
 import de.slash.cartsservice.cart.CartService;
-import de.slash.cartsservice.product.Product;
+import de.slash.cartsservice.product.ProductDTO;
 import de.slash.cartsservice.product.ProductService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,41 +16,45 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/carts")
 public class CartController {
 
-    private final CartService cartService;
+    @Autowired
+    private CartService cartService;
 
-    private final ProductService productService;
+    @Autowired
+    private ProductService productService;
 
-    public CartController(CartService cartService, ProductService productService) {
-        this.cartService = cartService;
-        this.productService = productService;
-    }
+    @Autowired
+    private ModelMapper modelMapper;
 
     @PostMapping("/create/{userId}")
-    private ResponseEntity<Cart> createCart(@PathVariable("userId") Long userId) {
+    private ResponseEntity<CartDTO> createCart(@PathVariable("userId") Long userId) {
         Cart createdCart = cartService.createCart(userId);
-        return ResponseEntity.status(OK).body(createdCart);
+        CartDTO cartDTO = modelMapper.map(createdCart, CartDTO.class);
+        return ResponseEntity.status(OK).body(cartDTO);
     }
 
     @PostMapping("/{userId}/products/{productId}")
-    private ResponseEntity<Cart> addProduct(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId) {
-        Product product = productService.loadById(productId);
+    private ResponseEntity<CartDTO> addProduct(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId) {
+        ProductDTO productDTO = productService.loadById(productId);
         Cart currentCart = cartService.loadByUserId(userId);
-        Cart updatedCart = cartService.addProduct(currentCart, product);
-        return ResponseEntity.status(OK).body(updatedCart);
+        Cart updatedCart = cartService.addProduct(currentCart, productDTO.getId());
+        CartDTO cartDTO = modelMapper.map(updatedCart, CartDTO.class);
+        return ResponseEntity.status(OK).body(cartDTO);
     }
 
     @DeleteMapping("/{userId}/products/{productId}")
-    private ResponseEntity<Cart> removeProduct(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId) {
-        Product product = productService.loadById(productId);
+    private ResponseEntity<CartDTO> removeProduct(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId) {
+        ProductDTO productDTO = productService.loadById(productId);
         Cart currentCart = cartService.loadByUserId(userId);
-        Cart updatedCart = cartService.removeProduct(currentCart, product);
-        return ResponseEntity.status(OK).body(updatedCart);
+        Cart updatedCart = cartService.removeProduct(currentCart, productDTO.getId());
+        CartDTO cartDTO = modelMapper.map(updatedCart, CartDTO.class);
+        return ResponseEntity.status(OK).body(cartDTO);
     }
 
     @GetMapping("/{userId}")
-    private ResponseEntity<Cart> getCart(@PathVariable("userId") Long userId) {
+    private ResponseEntity<CartDTO> getCart(@PathVariable("userId") Long userId) {
         Cart currentCart = cartService.loadByUserId(userId);
-        return ResponseEntity.status(OK).body(currentCart);
+        CartDTO cartDTO = modelMapper.map(currentCart, CartDTO.class);
+        return ResponseEntity.status(OK).body(cartDTO);
     }
 
     @DeleteMapping("/{userId}")
